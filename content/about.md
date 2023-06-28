@@ -1,6 +1,5 @@
 ---
 title : "About"
-date : "6/28/2023"
 aliases : ["about-us", "about-hugo", "contact"]
 ---
 
