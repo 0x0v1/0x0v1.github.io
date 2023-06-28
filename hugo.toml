@@ -1,0 +1,123 @@
+baseURL = "https://0x0v1.github.io"
+theme = "risotto"
+title = "0x0v1"
+author = "Ovi Liber"
+copyright = "Ovi Liber - 2023. The content of this website is published under [CC-BY-SA license](https://creativecommons.org/licenses/by-sa/4.0/)"
+paginate = 3
+languageCode = "en"
+DefaultContentLanguage = "en"
+enableInlineShortcodes = true
+# prevent build failures when using Hugo's Instagram shortcode due to deprecated Instagram API.
+# See https://github.com/gohugoio/hugo/issues/7228#issuecomment-714490456
+ignoreErrors = ["error-remote-getjson"]
+
+# Automatically add content sections to main menu
+sectionPagesMenu = "main"
+
+[params]
+noindex = false
+
+[params.theme]
+palette = "base16-dark"
+
+# Sidebar: about/bio
+[params.about]
+title = "0x0v1"
+description = "Blog posts written by Ovi Liber."
+logo = "images/YAve1SEB_400x400.jpg"
+
+# Sidebar: social links
+# Available icon sets:
+# * FontAwesome 6 <https://fontawesome.com/> ('fa-brands', 'fa-normal', or 'fa-solid' for brands)
+# * Academicons <https://jpswalsh.github.io/academicons> ('ai ai-')
+
+[[params.socialLinks]]
+icon = "fa-brands fa-github"
+title = "GitHub"
+url = "https://github.com/0x0v1"
+
+[[params.socialLinks]]
+icon = "fa-solid fa-envelope"
+title = "Email"
+url = "mailto:0x0v1@proton.me"
+
+[[params.socialLinks]]
+icon = "fa-brands fa-twitter"
+title = "Twitter"
+url = "https://twitter.com/0x0v1"
+
+[[params.socialLinks]]
+icon = "fa-brands fa-mastodon"
+title = "Mastodon"
+url = "https://infosec.exchange/@0v1"
+
+[menu]
+
+  [[menu.main]]
+    identifier = "about"
+    name = "About"
+    url = "/about/"
+    weight = 10
+
+  [[menu.main]]
+    identifier = "publications"
+    name = "Publications"
+    url = "/Publications/"
+    weight = 10
+
+  [[menu.main]]
+    identifier = "contact"
+    name = "Contact"
+    url = "/Contact/"
+    weight = 10
+
+  [[menu.main]]
+    identifier = "media"
+    name = "Media"
+    url = "/Media/"
+    weight = 10
+
+[taxonomies]
+category = "categories"
+tag = "tags"
+series = "series"
+
+# For hugo >= 0.60.0, enable inline HTML
+[markup.goldmark.renderer]
+unsafe = true
+
+[markup]
+
+  # Table of contents
+  # Add toc = true to content front matter to enable
+  [markup.tableOfContents]
+    startLevel = 2
+    endLevel   = 3
+    ordered    = true
+
+[privacy]
+
+  [privacy.vimeo]
+    disabled = false
+    simple = true
+
+  [privacy.twitter]
+    disabled = false
+    enableDNT = true
+    simple = true
+
+  [privacy.instagram]
+    disabled = false
+    simple = true
+
+  [privacy.youtube]
+    disabled = false
+    privacyEnhanced = true
+
+[services]
+
+  [services.instagram]
+    disableInlineCSS = true
+
+  [services.twitter]
+    disableInlineCSS = true
