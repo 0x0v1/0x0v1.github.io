@@ -3,10 +3,13 @@ title : "About"
 aliases : ["about-us", "about-hugo", "contact"]
 ---
 
-Ovi Liber is a passionate hacker, security researcher, and human rights activist devoted to combating Advanced Persistent Threats (APTs), hostile governments, surveillance, privacy violations, and corporate greed. With over a decade of experience in programming, hacking, and reverse engineering, Ovi specializes in malware and exploits. Having gained valuable insights from his previous work with government and big tech organizations, he possesses a deep understanding of the hostile and unethical aspects of hacking and security research.
+I am Ovi Liber, and my journey is fueled by a deep passion for hacking, security research, and the defense of human rights. My mission revolves around countering Advanced Persistent Threats (APTs), challenging oppressive governments, battling surveillance, addressing privacy infringements, and standing up against corporate avarice. I started hacking when I was 14 and sinc then have spent more than ten years immersing myself in programming, hacking, and reverse engineering. In previous lives, I worked with governmental agencies and tech giants. Despite my distaste for them now, I have gained invaluable insights into the dark underbelly of government & big tech hacking and security research.
 
-Motivated by a desire for positive change, Ovi grew weary of witnessing the destructive patterns perpetuated by hostile governments and unethical corporations. Consequently, he made a profound decision. Now an independent researcher, Ovi's primary focus is advocating for humanitarian rights in the realms of digital security and privacy.
+The yearning for positive transformation ultimately drove me to a pivotal crossroads. I felt disheartened by the recurring cycles of devastation conducted by unethical corporations and hostile governments. In response, I embarked on a profound personal journey in my craft and now, as an independent researcher, my central focus orbits around championing the rights of humanity within the domains of digital security and privacy.
 
-Working within the non-profit sector, Ovi is fervently committed to safeguarding civil society and NGOs. He dedicates his research not only to studying attacks, surveillance, and privacy violations that impact human rights but also to examining security issues in software and hardware developed by corporations.
+Within the non-profit sphere, I devote myself wholeheartedly to shielding civil society and non-governmental organizations (NGOs). My research delves into the analysis of attacks, surveillance tactics, and privacy transgressions that bear down upon human rights. Additionally, I scrutinize security vulnerabilities inherent in the software and hardware creations of profit-driven corporations and unethical governments.
 
-By connecting with Ovi on this site, you can join him in his relentless pursuit of digital justice and contribute to the protection of human rights in the digital landscape.
+By engaging with me through this platform, you have the opportunity to align yourself with my quest for digital equity and become a part of the collective endeavor to safeguard human rights within the digital world.
+
+As researcher working in the non-profit area, all forms of support for my work are greatly appreciated. You can support me through financial donation here: https://ko-fi.com/0x0v1 - if you do, I thank you greatly. 
+ 
