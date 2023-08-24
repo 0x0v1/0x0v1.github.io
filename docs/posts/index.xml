@@ -7,7 +7,16 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>Ovi Liber - 2023. The content of this website is published under [CC-BY-SA license](https://creativecommons.org/licenses/by-sa/4.0/)</copyright>
-    <lastBuildDate>Wed, 28 Jun 2023 14:32:43 +0100</lastBuildDate><atom:link href="https://0x0v1.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 24 Aug 2023 12:52:12 +0100</lastBuildDate><atom:link href="https://0x0v1.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Korean Military of Defence&#39;s Mobile Defence Security application</title>
+      <link>https://0x0v1.github.io/posts/koreanmnd/</link>
+      <pubDate>Thu, 24 Aug 2023 12:52:12 +0100</pubDate>
+      
+      <guid>https://0x0v1.github.io/posts/koreanmnd/</guid>
+      <description>The Korean Military of Defence&amp;rsquo;s &amp;ldquo;Mobile Defence Security&amp;rdquo; application (국방모바일보안) The Korean Military has a mandatory phone application for all soldiers. This application is used to support military personnel, staff and contractors to securely enter buildings and reduce the risk of data leaks. At the start of the year, I found two vulnerabilities in this application that would leak GPS locations of user. The Korean Ministry of Defense refused to respond to me or my findings, despite patching the product and speaking to media about it.</description>
+    </item>
+    
     <item>
       <title>Hello World... Are there hacktivists out there still?</title>
       <link>https://0x0v1.github.io/posts/hello-world/my-first-post/</link>
