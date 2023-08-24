@@ -1,3 +1,9 @@
 [module]
   [module.hugoVersion]
     min = "0.41.0"
+
+[Params.umami]
+  enabled = true
+  websiteId = "dc54a72f-fb2a-4863-8e44-29357ddf643e"
+  jsLocation = "https://analytics.umami.is/script.js"
+
