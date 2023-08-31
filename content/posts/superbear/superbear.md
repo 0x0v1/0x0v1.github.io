@@ -8,13 +8,13 @@ You're probably thinking, why is it called SuperBear? Well, here's why:
 
 ![pic](/superbear/image.png)
 
-I spent some time analyzing this attack campaign that was impacting civil society groups and thought it would be a good idea to document the technical analysis for the low-level infosec consumers. You can read our high-level report of the malware campaign here on [Interlab's website]().
+I spent some time analyzing this attack campaign that was impacting civil society groups and thought it would be a good idea to document the technical analysis for the low-level infosec consumers. You can read our high-level report of the malware campaign here on [Interlab's website](https://interlab.or.kr/archives/19416).
 
 Nethertheless I found this sample to be quite interesting since it utilised some interesting techniques. Notably, the usage of AutoIT to perform process hollowing, and then the C2 protocol itself being somewhat similar to that of commodity RATs. 
 
 ### AutoIT initial access
 
-In the initial finding of the RAT disclosed on the [Interlab website]() discusses how we found it to be deployed using an AutoIT script. I won't go into the original maldoc or powershell commands since it's covered in that publication. So let's start by looking at the AutoIT script. 
+In the initial finding of the RAT disclosed on the [Interlab website](https://interlab.or.kr/archives/19416) discusses how we found it to be deployed using an AutoIT script. I won't go into the original maldoc or powershell commands since it's covered in that publication. So let's start by looking at the AutoIT script. 
 
 On inital view, I’d found that the script appeared to be compiled and packed. Since this is a typical feature of AutoIT scripts, I used AutoITExtractor to decompile the script (we made all payloads available on both open-source and commercial malware zoo sites, so if you want to see any of this data yourself check the Interlab post). The source code detailed a trivial process injection operation by hollowing memory from a spawned instance of Explorer.exe. It decrypted a payload and injected it into the hollowed memory.  
 
