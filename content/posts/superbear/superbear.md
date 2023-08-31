@@ -10,13 +10,13 @@ You're probably thinking, why is it called SuperBear? Well, here's why:
 
 I spent some time analyzing this attack campaign that was impacting civil society groups and thought it would be a good idea to document the technical analysis for the low-level infosec consumers. You can read our high-level report of the malware campaign here on [Interlab's website](https://interlab.or.kr/archives/19416).
 
-Nethertheless I found this sample to be quite interesting since it utilised some interesting techniques. Notably, the usage of AutoIT to perform process hollowing, and then the C2 protocol itself being somewhat similar to that of commodity RATs. 
+Nethertheless I found this sample to be quite interesting since it utilized some interesting techniques. Notably, the usage of AutoIT to perform process hollowing, and then the C2 protocol itself being somewhat similar to that of commodity RATs. 
 
 ### AutoIT initial access
 
 In the initial finding of the RAT disclosed on the [Interlab website](https://interlab.or.kr/archives/19416) discusses how we found it to be deployed using an AutoIT script. I won't go into the original maldoc or powershell commands since it's covered in that publication. So let's start by looking at the AutoIT script. 
 
-On inital view, I’d found that the script appeared to be compiled and packed. Since this is a typical feature of AutoIT scripts, I used AutoITExtractor to decompile the script (we made all payloads available on both open-source and commercial malware zoo sites, so if you want to see any of this data yourself check the Interlab post). The source code detailed a trivial process injection operation by hollowing memory from a spawned instance of Explorer.exe. It decrypted a payload and injected it into the hollowed memory.  
+On inital view, I’d found that the script appeared to be compiled and packed. Since this is a typical feature of AutoIT scripts, I used AutoITExtractor to decompile the script (we made all payloads available on both open-source and commercial malware zoo sites, so if you want to see any of this data yourself check the Interlab post). The source code detailed a trivial process injection operation by hollowing memory from a spawned instance of Explorer.exe. It decrypted a payload and injected it into the hollowed memory.  
 
 ![Alt text](/superbear/image-2.png)
 
@@ -61,13 +61,13 @@ Once the C2 connection is established, it performs a HTTP request. Interestingly
 
 ![Alt text](/superbear/image-9.png)
 
-It checks if the request was successful and then allocates memory using “VirtualAlloc”. The allocated memory is then read from the HTTP connection using the InternetReadFile function. This is looped, and retreaves data from the connection into the “lpBuffer”. 
+It checks if the request was successful and then allocates memory using “VirtualAlloc”. The allocated memory is then read from the HTTP connection using the InternetReadFile function. This is looped, and retrieves data from the connection into the “lpBuffer”. 
 
 ![Alt text](/superbear/image-10.png)
 
 The HTML data is checked for the string “NdBrldr”, if the string “NdBrldr” is not found during the processing of the loop the loop will exit. If it’s found, it will continue and a string “Found watermark” is pushed to the stack.
 
-After the loop ends the allocated memeory is realased using “VirtualFree” and the request handle is closed using “InternetCloseHandle”.
+After the loop ends the allocated memory is released using “VirtualFree” and the request handle is closed using “InternetCloseHandle”.
 
 Once the connection is established it will do one of four operations depending on the command message received from the C2. 
 
@@ -94,7 +94,7 @@ If the DLL command is found, it will pull a DLL payload from the C2 and use rund
 
 ![Alt text](/superbear/image-13.png)
 
-I won't document the "do nothing" portion :). In the sample I had, the C2 was instructing to only initate the exfiltration recon activity described above. I wasn't able to pull an addition DLL payload. Maybe we will see what that DLL contains in the future. Definitely something to look out for. 
+I won't document the "do nothing" portion :). In the sample I had, the C2 was instructing to only initiate the exfiltration recon activity described above. I wasn't able to pull an addition DLL payload. Maybe we will see what that DLL contains in the future. Definitely something to look out for. 
 
 ### Final thoughts
 
@@ -107,11 +107,8 @@ Malware Bazaar:
 - SuperBear RAT (dumped PE from memory): https://bazaar.abuse.ch/sample/282e926eb90960a8a807dd0b9e8668e39b38e6961b0023b09f8b56d287ae11cb
 - AutoIT process injector: https://bazaar.abuse.ch/sample/5305b8969b33549b6bd4b68a3f9a2db1e3b21c5497a5d82cec9beaeca007630e/
 
-Generally I think the RAT is pretty trivial and also demonstrated functionality similar to xRAT/Quasar. Singature detections for it seem either generic or heuristic, so I'm not sure how much more samples we'll see but Since Kimsuky have utlised that in the past, I am wondering why this seems novel. Why did they move from using Quasar to something like this? Also another question that makes me ponder is the utilisation of AutoIT. There have been recent reports of open-source tooling being used more by other threat groups in NK, is there a connection here? Maybe I'm just trying to make something out of nothing but I think it's an interesting point to consider.  
+Generally I think the RAT is pretty trivial and also demonstrated functionality similar to xRAT/Quasar. Signature detection for it seem either generic or heuristic, so I'm not sure how much more samples we'll see but since Kimsuky have utilized that in the past, I am wondering why this seems novel. Why did they move from using Quasar to something like this? Also another question that makes me ponder is the utilization of AutoIT. There have been recent reports of open-source tooling being used more by other threat groups in NK, is there a connection here? Maybe I'm just trying to make something out of nothing but I think it's an interesting point to consider.  
 
 When I get round to it, I'll add some Yara rules here and update this post. 
 
 Ovi
-
-
-
