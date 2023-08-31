@@ -7,7 +7,18 @@
     <generator>Hugo -- gohugo.io</generator>
     <language>en</language>
     <copyright>2023. The content of this website is published under [CC-BY-SA license](https://creativecommons.org/licenses/by-sa/4.0/).</copyright>
-    <lastBuildDate>Thu, 24 Aug 2023 12:52:12 +0100</lastBuildDate><atom:link href="https://0x0v1.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 31 Aug 2023 20:43:39 +0100</lastBuildDate><atom:link href="https://0x0v1.github.io/posts/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reverse engineering SuperBear RAT.</title>
+      <link>https://0x0v1.github.io/posts/superbear/superbear/</link>
+      <pubDate>Thu, 31 Aug 2023 20:43:39 +0100</pubDate>
+      
+      <guid>https://0x0v1.github.io/posts/superbear/superbear/</guid>
+      <description>You&amp;rsquo;re probably thinking, why is it called SuperBear? Well, here&amp;rsquo;s why:
+I spent some time analyzing this attack campaign that was impacting civil society groups and thought it would be a good idea to document the technical analysis for the low-level infosec consumers. You can read our high-level report of the malware campaign here on Interlab&amp;rsquo;s website.
+Nethertheless I found this sample to be quite interesting since it utilised some interesting techniques.</description>
+    </item>
+    
     <item>
       <title>Korean Military of Defence&#39;s Mobile Defence Security application</title>
       <link>https://0x0v1.github.io/posts/koreanmnd/</link>

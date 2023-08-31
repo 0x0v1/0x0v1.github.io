@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head><title>Reverse engineering SuperBear RAT. &ndash; 0x0v1</title>
+<meta name="description" content="Blog posts written by Ovi.">
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta charset="UTF-8"/>
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" integrity="sha512-1sCRPdkRXhBV2PBLUdRb4tMg1w2YPf37qatUFeS7zlBy7jJI8Lf4VHwWfZZfpXtYSLy85pkm9GaYVYMfw5BC1A==" crossorigin="anonymous" />
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.9.1/css/academicons.min.css" integrity="sha512-b1ASx0WHgVFL5ZQhTgiPWX+68KjS38Jk87jg7pe+qC7q9YkEtFq0z7xCglv7qGIs/68d3mAp+StfC8WKC5SSAg==" crossorigin="anonymous" />
+
+
+<link rel="stylesheet" href="https://0x0v1.github.io/css/palettes/base16-dark.css">
+<link rel="stylesheet" href="https://0x0v1.github.io/css/risotto.css">
+<link rel="stylesheet" href="https://0x0v1.github.io/css/custom.css">
+
+
+<script async src="https://analytics.umami.is/script.js" data-website-id="dc54a72f-fb2a-4863-8e44-29357ddf643e"></script></head>
+
+    <body>
+        <div class="page">
+
+            <header class="page__header"><nav class="page__nav main-nav">
+    <ul>
+    <h1 class="page__logo"><a href="https://0x0v1.github.io" class="page__logo-inner">0x0v1</a></h1>
+    
+    
+    <li class="main-nav__item"><a class="nav-main-item" href="https://0x0v1.github.io/about/" title="">About</a></li>
+    
+    <li class="main-nav__item"><a class="nav-main-item" href="https://0x0v1.github.io/contact/" title="">Contact</a></li>
+    
+    <li class="main-nav__item"><a class="nav-main-item" href="https://0x0v1.github.io/media/" title="">Media</a></li>
+    
+    <li class="main-nav__item"><a class="nav-main-item" href="https://0x0v1.github.io/publications/" title="">Publications</a></li>
+    
+    <li class="main-nav__item"><a class="nav-main-item active" href="https://0x0v1.github.io/posts/" title="Posts">Posts</a></li>
+    
+    </ul>
+</nav>
+
+</header>
+
+            <section class="page__body">
+    <header class="content__header">
+        <h1>Reverse engineering SuperBear RAT.</h1>
+    </header>
+    
+    <div class="content__body">
+        <p>You&rsquo;re probably thinking, why is it called SuperBear? Well, here&rsquo;s why:</p>
+<p><img src="/superbear/image.png" alt="pic"></p>
+<p>I spent some time analyzing this attack campaign that was impacting civil society groups and thought it would be a good idea to document the technical analysis for the low-level infosec consumers. You can read our high-level report of the malware campaign here on <a href="">Interlab&rsquo;s website</a>.</p>
+<p>Nethertheless I found this sample to be quite interesting since it utilised some interesting techniques. Notably, the usage of AutoIT to perform process hollowing, and then the C2 protocol itself being somewhat similar to that of commodity RATs.</p>
+<h3 id="autoit-initial-access">AutoIT initial access</h3>
+<p>In the initial finding of the RAT disclosed on the <a href="">Interlab website</a> discusses how we found it to be deployed using an AutoIT script. I won&rsquo;t go into the original maldoc or powershell commands since it&rsquo;s covered in that publication. So let&rsquo;s start by looking at the AutoIT script.</p>
+<p>On inital view, I’d found that the script appeared to be compiled and packed. Since this is a typical feature of AutoIT scripts, I used AutoITExtractor to decompile the script (we made all payloads available on both open-source and commercial malware zoo sites, so if you want to see any of this data yourself check the Interlab post). The source code detailed a trivial process injection operation by hollowing memory from a spawned instance of Explorer.exe. It decrypted a payload and injected it into the hollowed memory.</p>
+<p><img src="/superbear/image-2.png" alt="Alt text"></p>
+<p>The script is too large to cover in this post and not really necessary. The threat actor actually just modified an open-source script that I&rsquo;d found discussed across a bunch of different forums:</p>
+<ul>
+<li><a href="https://www.autoitscript.com/forum/topic/99412-run-binary/page/8/">https://www.autoitscript.com/forum/topic/99412-run-binary/page/8/</a></li>
+<li><a href="https://syra.forumcommunity.net/?t=55181142">https://syra.forumcommunity.net/?t=55181142</a></li>
+<li><a href="https://autoit-script.ru/threads/peredacha-parametrov-komandnoj-stroki.24834/">https://autoit-script.ru/threads/peredacha-parametrov-komandnoj-stroki.24834/</a></li>
+</ul>
+<p>I couldn’t be bothered to reverse the entire crypto operation to get the payload, if you look at the sample you&rsquo;ll see what I mean, so for time sake I just executed it dynamically with the intention of carving out the injected PE.</p>
+<p>When the script spawns explorer.exe we can see a Private address space with RWX permissions. A notable sign of injection!</p>
+<p><img src="/superbear/image-3.png" alt="Alt text"></p>
+<p>Inspecting the memory we see an MZ header.</p>
+<p><img src="/superbear/image-4.png" alt="Alt text"></p>
+<p>&hellip; and contained within that memory is also a string relating to the C2 server that I’d previously found in sandbox detonation.</p>
+<p><img src="/superbear/image-5.png" alt="Alt text"></p>
+<p>From a detection standpoint, this process hollowing operation is pretty loud and I’d be surprised if most Avs didn’t pick it up. You can of course use Process Hacker etc to dump the PE file. Though I ran @hasherezade’s <a href="https://github.com/hasherezade/hollows_hunter">Hollows Hunter</a> to get a dump of the PE file. Once dumped, I took the PE file to IDA and here’s what I found.</p>
+<h3 id="superbear-rat-static-reverse-engineering">SuperBear RAT static reverse engineering</h3>
+<p>Much like other RATs the malicious code first creates a mutex object using “CreateMutexW”. The mutex name is (&ldquo;BEARLDR-EURJ-RHRHR&rdquo;). In then handles an “already running” case by checking if the mutex creation result is 5. If it is, it displays a message stating “already running” and proceeds to exit the process. If it’s not, it calls sub_401070 which establishes the C2 connection.</p>
+<p><img src="/superbear/image-6.png" alt="Alt text"></p>
+<p>The C2 mechanism begins by first allocating memory and initializing a memory block to hold a string “AAAAAA” providing space to store data. It then defines three variables for URI paths “/id1”, “/id2” &amp; “/id3”.</p>
+<p><img src="/superbear/image-7.png" alt="Alt text"></p>
+<p>It then validates the C2 connection by looping over a call to “InternetOpenW” till it successfully establishes a valid “hInternet” handle. Once complete, it uses “InternetConnectW” to connect to the C2 server, in this instance “hironchk[.]com” checking the defined URI paths previously. It iterates through these three URI paths indefinitely until a connection is established. After successful connection it sleeps for 10 seconds before continuing the loop again.</p>
+<p><img src="/superbear/image-8.png" alt="Alt text"></p>
+<p>During dynamic analysis, you can of course see the malware attempting connecting to these URI paths.</p>
+<p>Once the C2 connection is established, it performs a HTTP request. Interestingly, the actor left a push instruction that pushes the address of the string “Connected to vk.com” onto the stack. Despite this, the C2 address is not anything to do with VK, though this is an interesting observation a TI perspective.</p>
+<p><img src="/superbear/image-9.png" alt="Alt text"></p>
+<p>It checks if the request was successful and then allocates memory using “VirtualAlloc”. The allocated memory is then read from the HTTP connection using the InternetReadFile function. This is looped, and retreaves data from the connection into the “lpBuffer”.</p>
+<p><img src="/superbear/image-10.png" alt="Alt text"></p>
+<p>The HTML data is checked for the string “NdBrldr”, if the string “NdBrldr” is not found during the processing of the loop the loop will exit. If it’s found, it will continue and a string “Found watermark” is pushed to the stack.</p>
+<p>After the loop ends the allocated memeory is realased using “VirtualFree” and the request handle is closed using “InternetCloseHandle”.</p>
+<p>Once the connection is established it will do one of four operations depending on the command message received from the C2.</p>
+<ul>
+<li>Do nothing</li>
+<li>Exfiltrate process and system data</li>
+<li>Download and execute a shell command</li>
+<li>Download and run a DLL</li>
+</ul>
+<p>When exfiltrating data, the RAT uses “CreateToolhelp32Snapshot” to create a snapshot of the running processes and saves them to a file located here:
+“C:\Users\Public\Documents\proc.db”</p>
+<p>It then executes the SystemInfo command and saves the output to a file located here:
+“C:\Users\Public\Documents\sys.db”</p>
+<p>Each of these text files are uploaded to the C2 located at URI “/upload/upload.php”</p>
+<p><img src="/superbear/image-11.png" alt="Alt text"></p>
+<p>If the download execute command is seen, it reads a base64 encoded string from the C2 server and decodes it. It then uses the ShellExecuteW to execute this.</p>
+<p><img src="/superbear/image-12.png" alt="Alt text"></p>
+<p>If the DLL command is found, it will pull a DLL payload from the C2 and use rundll32 to execute it. This DLL data is base64 encoded, and when pulled from the C2 it decodes it and stores the decoded result in a memory block. The resultant payload is allocated using “VirtualAlloc” and memory freed by VirtualFree. It attempts to generate a random string for the DLL filename, if it can’t it uses a default string of “SuperBear”.</p>
+<p><img src="/superbear/image-13.png" alt="Alt text"></p>
+<p>I won&rsquo;t document the &ldquo;do nothing&rdquo; portion :). In the sample I had, the C2 was instructing to only initate the exfiltration recon activity described above. I wasn&rsquo;t able to pull an addition DLL payload. Maybe we will see what that DLL contains in the future. Definitely something to look out for.</p>
+<h3 id="final-thoughts">Final thoughts</h3>
+<p>I made all these samples available here:</p>
+<p>VT Collection:
+<a href="https://www.virustotal.com/gui/collection/454cfe3be695d0a387d7877c11d3b224b3e2c7d22fc2f31f349b5c23799967ec/summary">https://www.virustotal.com/gui/collection/454cfe3be695d0a387d7877c11d3b224b3e2c7d22fc2f31f349b5c23799967ec/summary</a></p>
+<p>Malware Bazaar:</p>
+<ul>
+<li>SuperBear RAT (dumped PE from memory): <a href="https://bazaar.abuse.ch/sample/282e926eb90960a8a807dd0b9e8668e39b38e6961b0023b09f8b56d287ae11cb">https://bazaar.abuse.ch/sample/282e926eb90960a8a807dd0b9e8668e39b38e6961b0023b09f8b56d287ae11cb</a></li>
+<li>AutoIT process injector: <a href="https://bazaar.abuse.ch/sample/5305b8969b33549b6bd4b68a3f9a2db1e3b21c5497a5d82cec9beaeca007630e/">https://bazaar.abuse.ch/sample/5305b8969b33549b6bd4b68a3f9a2db1e3b21c5497a5d82cec9beaeca007630e/</a></li>
+</ul>
+<p>Generally I think the RAT is pretty trivial and also demonstrated functionality similar to xRAT/Quasar. Singature detections for it seem either generic or heuristic, so I&rsquo;m not sure how much more samples we&rsquo;ll see but Since Kimsuky have utlised that in the past, I am wondering why this seems novel. Why did they move from using Quasar to something like this? Also another question that makes me ponder is the utilisation of AutoIT. There have been recent reports of open-source tooling being used more by other threat groups in NK, is there a connection here? Maybe I&rsquo;m just trying to make something out of nothing but I think it&rsquo;s an interesting point to consider.</p>
+<p>When I get round to it, I&rsquo;ll add some Yara rules here and update this post.</p>
+<p>Ovi</p>
+
+    </div>
+    <footer class="content__footer"></footer>
+
+            </section>
+
+            <section class="page__aside">
+                <div class="aside__about">
+<div class="aside__about">
+    <img class="about__logo" src="https://0x0v1.github.io/images/YAve1SEB_400x400.jpg" alt="Logo">
+<h1 class="about__title">0x0v1</h1>
+<p class="about__description">Blog posts written by Ovi.</p>
+</div>
+
+
+<ul class="aside__social-links">
+    
+    <li>
+        <a href="https://github.com/0x0v1" rel="me" aria-label="GitHub" title="GitHub"><i class="fa-brands fa-github" aria-hidden="true"></i></a>&nbsp;
+    </li>
+    
+    <li>
+        <a href="mailto:0x0v1@proton.me" rel="me" aria-label="Email" title="Email"><i class="fa-solid fa-envelope" aria-hidden="true"></i></a>&nbsp;
+    </li>
+    
+    <li>
+        <a href="https://twitter.com/0x0v1" rel="me" aria-label="Twitter" title="Twitter"><i class="fa-brands fa-twitter" aria-hidden="true"></i></a>&nbsp;
+    </li>
+    
+    <li>
+        <a href="https://infosec.exchange/@0v1" rel="me" aria-label="Mastodon" title="Mastodon"><i class="fa-brands fa-mastodon" aria-hidden="true"></i></a>&nbsp;
+    </li>
+    
+</ul>
+</div>
+                <hr>
+                <div class="aside__content">
+    
+    
+        <p>
+            
+            2023-08-31
+        </p>
+    
+
+    
+
+                </div>
+            </section>
+
+            <footer class="page__footer"><p>
+    
+    
+    
+    
+    
+    
+      
+    
+      
+    
+      
+    
+      
+    
+      
+    
+    
+    
+</p>
+<br /><br />
+<p class="copyright"><ol start="2023">
+<li>The content of this website is published under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA license</a>.</li>
+</ol>
+</p></footer>
+
+        </div>
+    </body>
+
+</html>
